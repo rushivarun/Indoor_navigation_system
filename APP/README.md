@@ -1,3 +1,2 @@
 # Indoor_navigation_system
-ALl android files and folders here..
-
+Android project files and folders will be uploaded and regularly updated here :)
