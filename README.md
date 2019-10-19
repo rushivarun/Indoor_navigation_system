@@ -1,2 +1,2 @@
 # Indoor_navigation_system
-App to aid navigating through pathways indoors.
+Android Application to enhance the performance of navigation by involving Indoor Navigation via WiFi
