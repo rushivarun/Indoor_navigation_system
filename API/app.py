@@ -3,9 +3,11 @@ from flask_cors import CORS
 import math
 from flask import jsonify, request
 import googlemaps
+import os
 
 PORT = 8000
-API_KEY = "AIzaSyC5zveAthZA233R3pZgUHFhGo68ND6AHUA"
+API_KEY = os.environ['API_KEY1']
+print(API_KEY)
 app = Flask(__name__)
 CORS(app)
 
@@ -13,7 +15,8 @@ CORS(app)
 def grid_data(AK=API_KEY):
     gmaps = googlemaps.Client(key = AK)
     data_in = request.json['data']
-    place = gmaps.places('SMV, VIT University')
+    print(data_in)
+    place = gmaps.places(data_in)
     latitude = place['results'][0]['geometry']['location']['lat']
     longitude = place['results'][0]['geometry']['location']['lng']
 
@@ -34,4 +37,4 @@ def grid_data(AK=API_KEY):
     return jsonify(result_list)
 
 if __name__ == '__main__':
-    app.run(port=PORT, debug=True)
+    app.run(port=PORT, debug=False)

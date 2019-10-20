@@ -1,8 +1,9 @@
 import googlemaps
 import pprint
 import math
+import os
 
-API_KEY = "AIzaSyC5zveAthZA233R3pZgUHFhGo68ND6AHUA"
+API_KEY = os.environ['API_KEY1']
 gmaps = googlemaps.Client(key = API_KEY)
 
 place = gmaps.places('SMV, VIT University')
