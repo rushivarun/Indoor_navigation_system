@@ -1,5 +1,4 @@
 from flask import Flask
-from flask_cors import CORS
 import math
 from flask import jsonify, request
 import googlemaps
@@ -7,7 +6,6 @@ import os
 
 PORT = 8000
 app = Flask(__name__)
-CORS(app)
 
 @app.route('/grid_data', methods = ['POST'])
 def grid_data():
