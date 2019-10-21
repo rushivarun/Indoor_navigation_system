@@ -46,7 +46,7 @@ def grid_data():
                 'quad' : quad
             }
             result_list.append(result)  
-    return jsonify(result_list)
+    return jsonify(result=result_list)
 
 @app.route('/grid_id', methods = ["POST"])
 def grid_id():
@@ -103,7 +103,8 @@ def grid_id():
                 "gid" : gid,
                 "distance" : dist
             }
-    return jsonify(str(min_distance))
+    return jsonify(result = str(min_distance))
+    
 
 
 
