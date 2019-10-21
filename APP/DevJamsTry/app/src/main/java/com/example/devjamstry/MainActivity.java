@@ -18,10 +18,16 @@ import android.location.LocationListener;
 */
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.SearchView;
 import android.widget.Toast;
 
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.Volley;
 import com.google.android.gms.common.ConnectionResult;
 
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -37,21 +43,27 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.IOException;
 import java.util.List;
 
 public class MainActivity extends FragmentActivity implements OnMapReadyCallback, GoogleApiClient.ConnectionCallbacks,GoogleApiClient.OnConnectionFailedListener, LocationListener {
     public GoogleApiClient googleApiClient;
-    public double Latitude = 0;
-    public double Longitude = 0;
+     double Latitude = 0;
+    double Longitude = 0;
     public LocationRequest locationRequest;
     public Location lastLocation;
     public Marker currentUserLocationMarker;
     public static final int Request_User_Location_Code = 99;
+    public RequestQueue mRequestQueue;
+    public String resp;
+    public String url = "https://indoor-nav.herokuapp.com/grid_data";
 
-    GoogleMap mMap;
-    SupportMapFragment mapFragment;
-    SearchView searchView;
+    public GoogleMap mMap;
+    public SupportMapFragment mapFragment;
+    public SearchView searchView;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -76,7 +88,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                     Address address = addressList.get(0);
                     LatLng latlng = new LatLng(address.getLatitude(),address.getLongitude());
                     mMap.addMarker(new MarkerOptions().position(latlng).title(location));
-                    mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latlng,10));
+                    mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latlng,16));
                 }
                 else{
                     Toast.makeText(MainActivity.this, "LOLOLOL", Toast.LENGTH_SHORT).show();
@@ -103,6 +115,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
             buildGoogleApiClient();
             mMap.setMyLocationEnabled(true);
         }
+
     }
     public boolean checkUserLocationPermission(){
         if(ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -156,7 +169,6 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         LatLng latLng = new LatLng(location.getLatitude(),location.getLongitude());
         Latitude = location.getLatitude();
         Longitude = location.getLongitude();
-        System.out.println(Latitude + " :: " + Longitude);
         MarkerOptions markerOptions = new MarkerOptions();
         markerOptions.title("User Current Location").icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_VIOLET));
         markerOptions.position(latLng);
@@ -166,6 +178,29 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         if(googleApiClient!=null){
             LocationServices.FusedLocationApi.removeLocationUpdates(googleApiClient,this);
         }
+        mRequestQueue = Volley.newRequestQueue(this);
+
+        JSONObject jsonObject = null;
+        try {
+            jsonObject = new JSONObject("{\"data\":{\"lat\":"+Latitude+",\"lng\":"+Longitude+"}}");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(url, jsonObject, new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+                Log.d("Response : ",response.toString());
+                resp = response.toString();
+            }
+        },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Toast.makeText(MainActivity.this, "Error : " + error, Toast.LENGTH_LONG).show();
+                    }
+                });
+
+        mRequestQueue.add(jsonObjectRequest);
     }
 
 
@@ -190,8 +225,17 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
 
     }
-    public void nextFromAdmin(View V){
-        Intent i = new Intent(MainActivity.this, AdminCalculation.class);
+    public void nextFromAdmin(View V) throws JSONException {
+        /*Intent i = new Intent(MainActivity.this, AdminCalculation.class);
+        i.putExtra("Lat",String.valueOf(Latitude));
+        i.putExtra("Lng",String.valueOf(Longitude));
+        startActivity(i);*/
+        System.out.println(Latitude+ ":((((((((((((((((((((( " + Longitude);
+
+        Intent i = new Intent(MainActivity.this,WifiScanActivity.class);
+        System.out.println(Latitude+ ":((((((((((((((((((((( " + Longitude);
+        System.out.println(resp);
+        i.putExtra("JSONObjectFromFirstAPI",resp);
         i.putExtra("Lat",String.valueOf(Latitude));
         i.putExtra("Lng",String.valueOf(Longitude));
         startActivity(i);

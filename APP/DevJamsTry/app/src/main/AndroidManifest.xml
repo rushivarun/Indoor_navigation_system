@@ -27,8 +27,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".WifiScanActivity"></activity>
-        <activity android:name=".AdminCalculation" />
+        <activity android:name=".ShowMapAdmin"></activity>
+        <activity android:name=".WifiScanActivity" />
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"
